@@ -1,3 +1,3 @@
 class DevelopmentConfig(object):
-    SQLALCHEMY_DATABASE_URL = 'postgresql://postgres@localhost/tf-blogful'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres@localhost/tf-blogful'
     DEBUG = True
