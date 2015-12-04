@@ -1,16 +1,14 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, Text, DateTime
-
-from .database import Base, engine
+from .database import db
 
 
-class Entry(Base):
+class Entry(db.Model):
     __tablename__ = 'entries'
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String(1024))
-    content = Column(Text)
-    datetime = Column(DateTime, default=datetime.datetime.now)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(1024))
+    content = db.Column(db.Text)
+    datetime = db.Column(db.DateTime, default=datetime.datetime.now)
 
-Base.metadata.create_all(engine)
+db.create_all()

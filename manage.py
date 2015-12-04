@@ -4,7 +4,7 @@ import loremipsum
 from flask.ext.script import Manager
 
 from blogful import app
-from blogful.database import session
+from blogful.database import db
 from blogful.models import Entry
 
 manager = Manager(app)
@@ -17,11 +17,11 @@ def run():
 @manager.command
 def seed(entries=10):
     for n in entries:
-        session.add(Entry(
+        db.session.add(Entry(
             title='Test Entry #{}'.format(n),
             content=loremipsum.get_paragraph(start_with_lorem=True)
         ))
-    session.commit()
+    db.session.commit()
 
 if __name__ == '__main__':
     manager.run()
