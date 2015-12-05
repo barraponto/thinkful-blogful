@@ -16,7 +16,7 @@ def run():
 
 @manager.command
 def seed(entries=10):
-    for n in entries:
+    for n in range(int(entries)):
         db.session.add(Entry(
             title='Test Entry #{}'.format(n),
             content=loremipsum.get_paragraph(start_with_lorem=True)
