@@ -1,7 +1,11 @@
 from flask import render_template
+from flask.ext.bower import Bower
 
 from . import app
 from .models import Entry
+
+
+Bower(app)
 
 
 @app.route('/')

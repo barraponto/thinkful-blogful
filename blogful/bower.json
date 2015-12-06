@@ -1,0 +1,23 @@
+{
+  "name": "blogful",
+  "authors": [
+    "Capi Etheriel <barraponto@gmail.com>"
+  ],
+  "description": "blogful sample application",
+  "main": "",
+  "moduleType": [],
+  "license": "GPLv3",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "normalize-css": "normalize.css#~3.0.3"
+  }
+}
