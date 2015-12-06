@@ -1,8 +1,9 @@
-from flask import render_template
+from flask import redirect, render_template, request, url_for
 from flask.ext.bower import Bower
 
 from . import app
 from .models import Entry
+from .database import db
 
 
 Bower(app)
@@ -30,3 +31,15 @@ def entries(page=1):
     return render_template('entries.html', entries=entries,
                            has_next=has_next, has_prev=has_prev,
                            current_page=page, total_pages=pages)
+
+@app.route('/entry/add', methods=['GET'])
+def add_entry_get():
+    return render_template('add_entry.html')
+
+@app.route('/entry/add', methods=['POST'])
+def add_entry_post():
+    entry = Entry(title=request.form['title'],
+                  content=request.form['content'])
+    db.session.add(entry)
+    db.session.commit()
+    return redirect(url_for('entries'))
