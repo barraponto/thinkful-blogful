@@ -7,8 +7,26 @@ from .models import Entry
 
 Bower(app)
 
+PAGINATE_BY = 10
+
 
 @app.route('/')
-def entries():
-    entries = Entry.query.order_by(Entry.datetime.desc()).all()
-    return render_template('entries.html', entries=entries)
+@app.route('/page/<int:page>')
+def entries(page=1):
+    if page < 1:
+        raise ValueError('Only positive values allowed for page number.')
+
+    page_index = page - 1
+    count = Entry.query.count()
+
+    start = page_index * PAGINATE_BY
+    end = start + PAGINATE_BY
+
+    pages = count / PAGINATE_BY
+    has_prev = page < pages
+    has_next = page_index > 0
+
+    entries = Entry.query.order_by(Entry.datetime.desc())[start:end]
+    return render_template('entries.html', entries=entries,
+                           has_next=has_next, has_prev=has_prev,
+                           current_page=page, total_pages=pages)
