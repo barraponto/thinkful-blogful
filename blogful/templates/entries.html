@@ -1,7 +1,8 @@
+{% import 'macros.html' as macros %}
 {% extends 'layout.html' %}
 
 {% block content%}
   {% for entry in entries %}
-    <h2>{{ entry.title }}</h2>
+    {{ macros.render_entry(entry) }}
   {% endfor %}
 {% endblock %}
