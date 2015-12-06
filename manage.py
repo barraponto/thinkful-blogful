@@ -16,11 +16,13 @@ def run():
 
 @manager.command
 def seed(entries=10):
-    for n in range(int(entries)):
-        response = requests.get('http://loripsum.net/api/1/medium/plaintext')
+    response = requests.get(
+        'http://loripsum.net/api/{}/medium/plaintext'.format(entries))
+    lorem_generator = filter(None, response.text.splitlines())
+    for index, lorem in enumerate(lorem_generator, start=1):
         db.session.add(Entry(
-            title='Test Entry #{}'.format(n),
-            content=response.text.strip()
+            title='Test Entry #{}'.format(index),
+            content=lorem
         ))
     db.session.commit()
 
