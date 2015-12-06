@@ -1,6 +1,6 @@
 import os
 
-import loremipsum
+import requests
 from flask.ext.script import Manager
 
 from blogful import app
@@ -17,9 +17,10 @@ def run():
 @manager.command
 def seed(entries=10):
     for n in range(int(entries)):
+        response = requests.get('http://loripsum.net/api/1/medium/plaintext')
         db.session.add(Entry(
             title='Test Entry #{}'.format(n),
-            content=loremipsum.get_paragraph(start_with_lorem=True)
+            content=response.text.strip()
         ))
     db.session.commit()
 
