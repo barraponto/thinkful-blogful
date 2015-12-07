@@ -2,8 +2,9 @@ from flask import redirect, render_template, request, url_for
 from flask.ext.bower import Bower
 
 from . import app
-from .models import Entry
 from .database import db
+from .forms import EntryForm
+from .models import Entry
 
 
 Bower(app)
@@ -34,12 +35,17 @@ def entries(page=1):
 
 @app.route('/entry/add', methods=['GET'])
 def add_entry_get():
-    return render_template('add_entry.html')
+    form = EntryForm()
+    return render_template('add_entry.html', form=form)
 
 @app.route('/entry/add', methods=['POST'])
 def add_entry_post():
-    entry = Entry(title=request.form['title'],
-                  content=request.form['content'])
-    db.session.add(entry)
-    db.session.commit()
-    return redirect(url_for('entries'))
+    form = EntryForm()
+    if form.validate_on_submit():
+        entry = Entry(title=request.form['title'],
+                    content=request.form['content'])
+        db.session.add(entry)
+        db.session.commit()
+        return redirect(url_for('entries'))
+    else:
+        return render_template('add_entry.html', form=form)

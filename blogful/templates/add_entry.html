@@ -1,17 +1,19 @@
+{% import 'macros.html' as macros %}
 {% extends 'layout.html' %}
 
 {% block content %}
 <h1>Add Entry</h1>
 <form action="" method="POST" role="form">
+  {{ form.csrf_token }}
   <div class="form-group">
-    <label for="title">Title</label>
-    <input id="title" name="title" type="text" class="text form-control"
-      value="" placeholder="Entry title" required>
+    {{ form.title.label }}
+    {{ form.title(class="text form-control", placeholder='Entry Title', required=True) }}
+    {{ macros.field_errors(form.title) }}
   </div>
   <div class="form-group">
-    <label for="content">Content</label>
-    <textarea name="content" placeholder="Entry content" id="content"
-      rows="20" class="form-control" required></textarea>
+    {{ form.content.label }}
+    {{ form.content(rows='20', placeholder='Entry Content', id='content', class='form-control', required=True) }}
+    {{ macros.field_errors(form.content) }}
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
