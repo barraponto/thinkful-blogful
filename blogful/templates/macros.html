@@ -3,6 +3,7 @@
   <div class="col-md-2 text-right metadata">
     <ul class="list-unstyled">
       <li>{{ entry.datetime | dateformat('%d/%m/%y') }}</li>
+      <li><a href="{{ url_for('entry_edit', eid=entry.id) }}">Edit</a></li>
     </ul>
   </div>
   <div class="col-md-10">

@@ -38,19 +38,32 @@ def entry(eid):
     entry = Entry.query.filter_by(id=eid).first_or_404()
     return render_template('entry.html', entry=entry)
 
-@app.route('/entry/add', methods=['GET'])
-def add_entry_get():
-    form = EntryForm()
-    return render_template('add_entry.html', form=form)
+@app.route('/entry/<int:eid>/edit', methods=['GET', 'POST'])
+def entry_edit(eid):
+    entry = Entry.query.filter_by(id=eid).first_or_404()
+    form = EntryForm(obj=entry)
 
-@app.route('/entry/add', methods=['POST'])
-def add_entry_post():
-    form = EntryForm()
     if form.validate_on_submit():
         entry = Entry(title=request.form['title'],
                     content=request.form['content'])
         db.session.add(entry)
         db.session.commit()
         return redirect(url_for('entries'))
+
+    else:
+        return render_template('add_entry.html', form=form)
+
+
+@app.route('/entry/add', methods=['GET', 'POST'])
+def add_entry():
+    form = EntryForm()
+
+    if form.validate_on_submit():
+        entry = Entry(title=request.form['title'],
+                    content=request.form['content'])
+        db.session.add(entry)
+        db.session.commit()
+        return redirect(url_for('entries'))
+
     else:
         return render_template('add_entry.html', form=form)
