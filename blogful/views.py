@@ -1,6 +1,6 @@
 from flask import flash, redirect, render_template, request, url_for
 from flask.ext.bower import Bower
-from flask.ext.login import login_user, login_required
+from flask.ext.login import login_user, login_required, logout_user, current_user
 from werkzeug import check_password_hash
 
 from . import app
@@ -83,7 +83,8 @@ def add_entry():
 
     if form.validate_on_submit():
         entry = Entry(title=form.title.data,
-                    content=form.content.data)
+                      content=form.content.data,
+                      author=current_user)
         db.session.add(entry)
         db.session.commit()
         return redirect(url_for('entries'))
@@ -92,7 +93,7 @@ def add_entry():
         return render_template('add_entry.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
-def login_get():
+def login():
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -104,3 +105,8 @@ def login_get():
             flash('Incorrect username or password', 'danger')
 
     return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    logout_user()
+    return redirect(url_for('entries'))
