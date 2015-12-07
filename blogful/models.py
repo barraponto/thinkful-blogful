@@ -12,6 +12,7 @@ class Entry(db.Model):
     title = db.Column(db.String(1024))
     content = db.Column(db.Text)
     datetime = db.Column(db.DateTime, default=datetime.datetime.now)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 class User(db.Model, UserMixin):
@@ -21,6 +22,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(128))
     email = db.Column(db.String(128), unique=True)
     password = db.Column(db.String(128))
+    entries = db.relationship('Entry', backref='author')
 
 
 db.create_all()
