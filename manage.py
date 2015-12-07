@@ -4,6 +4,7 @@ import string
 
 import requests
 from flask.ext.script import Manager
+from flask.ext.migrate import Migrate, MigrateCommand
 from werkzeug.security import generate_password_hash
 
 from blogful import app
@@ -11,7 +12,9 @@ from blogful.database import db
 from blogful.models import Entry, User
 
 
+migrate = Migrate(app, db)
 manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 @manager.command
 def run():
@@ -46,8 +49,6 @@ def adduser():
     db.session.commit()
 
     print('Created user {} with password {!r}'.format(email, password))
-
-
 
 
 if __name__ == '__main__':
