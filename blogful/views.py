@@ -3,7 +3,7 @@ from flask.ext.bower import Bower
 
 from . import app
 from .database import db
-from .forms import EntryForm
+from .forms import EntryForm, EntryDeleteForm
 from .models import Entry
 
 
@@ -52,6 +52,19 @@ def entry_edit(eid):
 
     else:
         return render_template('add_entry.html', form=form)
+
+@app.route('/entry/<int:eid>/delete', methods=['GET', 'POST'])
+def entry_delete(eid):
+    entry = Entry.query.filter_by(id=eid).first_or_404()
+    form = EntryDeleteForm()
+
+    if form.validate_on_submit():
+        db.session.delete(entry)
+        db.session.commit()
+        return redirect(url_for('entries'))
+
+    else:
+        return render_template('delete_entry.html', form=form)
 
 
 @app.route('/entry/add', methods=['GET', 'POST'])
