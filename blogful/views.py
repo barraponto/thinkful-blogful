@@ -18,13 +18,18 @@ def entries(page=1):
     if page < 1:
         raise ValueError('Only positive values allowed for page number.')
 
+    try:
+        paginate_by = int(request.args.get('limit', PAGINATE_BY))
+    except ValueError:
+        paginate_by = PAGINATE_BY
+
     page_index = page - 1
     count = Entry.query.count()
 
-    start = page_index * PAGINATE_BY
-    end = start + PAGINATE_BY
+    start = page_index * paginate_by
+    end = start + paginate_by
 
-    pages = count / PAGINATE_BY
+    pages = count / paginate_by
     has_prev = page < pages
     has_next = page_index > 0
 
