@@ -33,6 +33,11 @@ def entries(page=1):
                            has_next=has_next, has_prev=has_prev,
                            current_page=page, total_pages=pages)
 
+@app.route('/entry/<int:eid>')
+def entry(eid):
+    entry = Entry.query.filter_by(id=eid).first_or_404()
+    return render_template('entry.html', entry=entry)
+
 @app.route('/entry/add', methods=['GET'])
 def add_entry_get():
     form = EntryForm()
