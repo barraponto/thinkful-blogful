@@ -2,6 +2,7 @@ mistune==0.7.1
 requests==2.8.1
 Flask==0.10.1
 Flask-Bower==1.2.1
+Flask-Login==0.3.2
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12

@@ -1,10 +1,12 @@
-from flask import redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for
 from flask.ext.bower import Bower
+from flask.ext.login import login_user, login_required
+from werkzeug import check_password_hash
 
 from . import app
 from .database import db
-from .forms import EntryForm, EntryDeleteForm
-from .models import Entry
+from .forms import EntryForm, EntryDeleteForm, LoginForm
+from .models import Entry, User
 
 
 Bower(app)
@@ -44,6 +46,7 @@ def entry(eid):
     return render_template('entry.html', entry=entry)
 
 @app.route('/entry/<int:eid>/edit', methods=['GET', 'POST'])
+@login_required
 def entry_edit(eid):
     entry = Entry.query.filter_by(id=eid).first_or_404()
     form = EntryForm(obj=entry)
@@ -59,6 +62,7 @@ def entry_edit(eid):
         return render_template('add_entry.html', form=form)
 
 @app.route('/entry/<int:eid>/delete', methods=['GET', 'POST'])
+@login_required
 def entry_delete(eid):
     entry = Entry.query.filter_by(id=eid).first_or_404()
     form = EntryDeleteForm()
@@ -73,15 +77,30 @@ def entry_delete(eid):
 
 
 @app.route('/entry/add', methods=['GET', 'POST'])
+@login_required
 def add_entry():
     form = EntryForm()
 
     if form.validate_on_submit():
-        entry = Entry(title=request.form['title'],
-                    content=request.form['content'])
+        entry = Entry(title=form.title.data,
+                    content=form.content.data)
         db.session.add(entry)
         db.session.commit()
         return redirect(url_for('entries'))
 
     else:
         return render_template('add_entry.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login_get():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password, form.password.data):
+            login_user(user)
+            return redirect(request.args.get('next', url_for('entries')))
+        else:
+            flash('Incorrect username or password', 'danger')
+
+    return render_template('login.html', form=form)
