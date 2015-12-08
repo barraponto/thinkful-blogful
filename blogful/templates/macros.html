@@ -4,8 +4,10 @@
     <ul class="list-unstyled">
       <li>{{ entry.datetime | dateformat('%d/%m/%y') }}</li>
       <li>{{ entry.author.name | default('Anonymous') }}</li>
+      {% if entry.author.id == current_user.id %}
       <li><a href="{{ url_for('entry_edit', eid=entry.id) }}">Edit</a></li>
       <li><a href="{{ url_for('entry_delete', eid=entry.id) }}">Delete</a></li>
+      {% endif %}
     </ul>
   </div>
   <div class="col-md-10">

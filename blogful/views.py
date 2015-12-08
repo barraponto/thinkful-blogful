@@ -2,6 +2,7 @@ from flask import flash, redirect, render_template, request, url_for
 from flask.ext.bower import Bower
 from flask.ext.login import login_user, login_required, logout_user, current_user
 from werkzeug import check_password_hash
+from werkzeug.exceptions import Forbidden
 
 from . import app
 from .database import db
@@ -49,11 +50,14 @@ def entry(eid):
 @login_required
 def entry_edit(eid):
     entry = Entry.query.filter_by(id=eid).first_or_404()
+
+    if not all([entry.author, current_user]) or entry.author.id != current_user.id:
+        raise Forbidden('Only entry author can edit it.')
+
     form = EntryForm(obj=entry)
 
     if form.validate_on_submit():
-        entry = Entry(title=request.form['title'],
-                    content=request.form['content'])
+        entry = Entry(title=form.title.data, content=form.content.data)
         db.session.add(entry)
         db.session.commit()
         return redirect(url_for('entries'))
@@ -65,6 +69,10 @@ def entry_edit(eid):
 @login_required
 def entry_delete(eid):
     entry = Entry.query.filter_by(id=eid).first_or_404()
+
+    if not all([entry.author, current_user]) or entry.author.id != current_user.id:
+        raise Forbidden('Only entry author can edit it.')
+
     form = EntryDeleteForm()
 
     if form.validate_on_submit():
