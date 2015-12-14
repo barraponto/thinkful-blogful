@@ -10,4 +10,4 @@ def markdown(text):
 
 @app.template_filter()
 def dateformat(date, format):
-    return date.strftime(format)
+    return date.strftime(format) if date else None
