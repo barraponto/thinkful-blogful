@@ -3,8 +3,10 @@ from wtforms import fields, validators
 from wtforms.fields.html5 import EmailField
 
 class EntryForm(Form):
-    title = fields.StringField('Title', validators=[validators.InputRequired()])
-    content = fields.TextAreaField('Content', validators=[validators.InputRequired()])
+    title = fields.StringField(
+        'Title', validators=[validators.InputRequired()])
+    content = fields.TextAreaField(
+        'Content', validators=[validators.InputRequired()])
 
 class EntryDeleteForm(Form):
     pass
