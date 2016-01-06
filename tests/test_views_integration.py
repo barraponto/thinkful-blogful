@@ -31,8 +31,11 @@ class FlaskViewTestCase(unittest.TestCase):
 
 class TestAddEntry(FlaskViewTestCase):
 
-    fixtures = {'alice': User(name='Alice', email='alice@example.com',
-                              password=generate_password_hash('alice'))}
+    def setUp(self):
+        self.fixtures = {
+            'alice': User(name='Alice', email='alice@example.com',
+                          password=generate_password_hash('alice'))}
+        super(TestAddEntry, self).setUp()
 
     def test_add_entry(self):
         self.simulate_login(self.fixtures['alice'])
@@ -52,15 +55,19 @@ class TestAddEntry(FlaskViewTestCase):
         self.assertEqual(entry.content, 'Test Content')
         self.assertEqual(entry.author, self.fixtures['alice'])
 
+
 class TestEditEntry(FlaskViewTestCase):
 
-    fixtures = {'alice': User(name='Alice', email='alice@example.com',
-                              password=generate_password_hash('alice')),
-                'bob': User(name='Bob', email='bob@example.com',
-                            password=generate_password_hash('bob'))}
-    fixtures.update({'entry': Entry(
-        title='Test Entry', content='Test Content', author=fixtures['alice'])})
-
+    def setUp(self):
+        self.fixtures = {
+            'alice': User(name='Alice', email='alice@example.com',
+                        password=generate_password_hash('alice')),
+            'bob': User(name='Bob', email='bob@example.com',
+                        password=generate_password_hash('bob'))}
+        self.fixtures.update({
+            'entry': Entry(title='Test Entry', content='Test Content',
+                           author=self.fixtures['alice'])})
+        super(TestEditEntry, self).setUp()
 
     def test_entry_forbidden(self):
         self.simulate_login(self.fixtures['bob'])
