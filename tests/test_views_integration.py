@@ -9,27 +9,33 @@ from blogful import app
 from blogful.database import db
 from blogful.models import User, Entry
 
-class TestViews(unittest.TestCase):
+
+class FlaskViewTestCase(unittest.TestCase):
+
     def setUp(self):
         self.client = app.test_client()
 
         db.create_all()
-        self.user = User(name='Alice', email='alice@example.com',
-                         password=generate_password_hash('test'))
-        db.session.add(self.user)
+        db.session.add_all(self.fixtures.values())
         db.session.commit()
 
     def tearDown(self):
         db.session.close()
         db.drop_all()
 
-    def simulate_login(self):
+    def simulate_login(self, user):
         with self.client.session_transaction() as http_session:
-            http_session['user_id'] = str(self.user.id)
+            http_session['user_id'] = str(user.id)
             http_session['_fresh'] = True
 
+
+class TestAddEntry(FlaskViewTestCase):
+
+    fixtures = {'alice': User(name='Alice', email='alice@example.com',
+                              password=generate_password_hash('alice'))}
+
     def test_add_entry(self):
-        self.simulate_login()
+        self.simulate_login(self.fixtures['alice'])
         response = self.client.post('/entry/add', data={
             'title': 'Test Entry',
             'content': 'Test Content'
@@ -44,9 +50,26 @@ class TestViews(unittest.TestCase):
         entry = entries[0]
         self.assertEqual(entry.title, 'Test Entry')
         self.assertEqual(entry.content, 'Test Content')
-        self.assertEqual(entry.author, self.user)
+        self.assertEqual(entry.author, self.fixtures['alice'])
+
+class TestEditEntry(FlaskViewTestCase):
+
+    fixtures = {'alice': User(name='Alice', email='alice@example.com',
+                              password=generate_password_hash('alice')),
+                'bob': User(name='Bob', email='bob@example.com',
+                            password=generate_password_hash('bob'))}
+    fixtures.update({'entry': Entry(
+        title='Test Entry', content='Test Content', author=fixtures['alice'])})
 
 
+    def test_entry_forbidden(self):
+        self.simulate_login(self.fixtures['bob'])
+        response = self.client.post(
+            '/entry/{}/edit'.format(self.fixtures['entry'].id),
+            data={'content': 'New Test Content'})
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(urlparse(response.location).path, '/')
 
 
 if __name__ == '__main__':
