@@ -70,14 +70,13 @@ class TestEditEntry(FlaskViewTestCase):
                            author=self.fixtures['alice'])})
         super(TestEditEntry, self).setUp()
 
-    def test_entry_forbidden(self):
+    def test_unauthorized_edit_entry(self):
         self.simulate_login(self.fixtures['bob'])
         response = self.client.post(
             '/entry/{}/edit'.format(self.fixtures['entry'].id),
             data={'content': 'New Test Content'})
 
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(urlparse(response.location).path, '/')
 
 
 if __name__ == '__main__':
