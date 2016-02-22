@@ -1,6 +1,6 @@
 import os
 import unittest
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 from werkzeug.security import generate_password_hash
 
@@ -11,6 +11,10 @@ from blogful.models import User, Entry
 
 
 class FlaskViewTestCase(unittest.TestCase):
+
+    @staticmethod
+    def next_query_parameter(url):
+        return parse_qs(urlparse(url).query).get('next', [])
 
     def setUp(self):
         self.client = app.test_client()
@@ -37,6 +41,14 @@ class TestAddEntry(FlaskViewTestCase):
             'alice': User(name='Alice', email='alice@example.com',
                           password=generate_password_hash('alice'))}
         super(TestAddEntry, self).setUp()
+
+    def test_unauthenticated_add_entry(self):
+        response = self.client.post('/entry/add', data={
+            'title': 'Test Entry',
+            'content': 'Test Content'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/entry/add', self.next_query_parameter(response.location))
 
     def test_add_entry(self):
         self.simulate_login(self.fixtures['alice'])
