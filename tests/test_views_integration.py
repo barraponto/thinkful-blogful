@@ -70,6 +70,9 @@ class TestAddEntry(FlaskViewTestCase):
 
 
 class TestEditEntry(FlaskViewTestCase):
+    updated_entry_data = {
+        'title': 'New Test Title',
+        'content': 'New Test Content'}
 
     def setUp(self):
         self.fixtures = {
@@ -86,9 +89,23 @@ class TestEditEntry(FlaskViewTestCase):
         self.simulate_login(self.fixtures['bob'])
         response = self.client.post(
             '/entry/{}/edit'.format(self.fixtures['entry'].id),
-            data={'content': 'New Test Content'})
+            data=self.updated_entry_data)
 
         self.assertEqual(response.status_code, 403)
+
+    def test_authorized_edit_entry(self):
+        self.simulate_login(self.fixtures['alice'])
+        response = self.client.post(
+            '/entry/{}/edit'.format(self.fixtures['entry'].id),
+            data=self.updated_entry_data)
+
+        self.assertEqual(response.status_code, 302)
+
+        entries = Entry.query.all()
+        self.assertEqual(len(entries), 1)
+
+        entry = entries[0]
+        self.assertEqual(entry.content, 'New Test Content')
 
 
 if __name__ == '__main__':

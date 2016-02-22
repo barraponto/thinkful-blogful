@@ -57,7 +57,7 @@ def entry_edit(eid):
     form = EntryForm(obj=entry)
 
     if form.validate_on_submit():
-        entry = Entry(title=form.title.data, content=form.content.data)
+        form.populate_obj(entry)
         db.session.add(entry)
         db.session.commit()
         return redirect(url_for('entries'))
