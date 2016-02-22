@@ -18,6 +18,7 @@ class FlaskViewTestCase(unittest.TestCase):
         db.create_all()
         db.session.add_all(self.fixtures.values())
         db.session.commit()
+        assert [db.session.refresh(fixture) for fixture in self.fixtures.values()]
 
     def tearDown(self):
         db.session.close()
