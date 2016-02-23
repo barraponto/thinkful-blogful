@@ -1,7 +1,9 @@
 language: python
 python:
   - "3.5"
-install: python3 -m pip install -r dev-requirements.txt
+install:
+  - python3 -m pip install -r dev-requirements.txt
+  - npm install -g bower
 env:
   - CONFIG_PATH=blogful.config.TravisConfig
 before_script:
