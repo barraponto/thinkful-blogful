@@ -117,5 +117,43 @@ class TestEditEntry(FlaskViewTestCase):
         self.assertEqual(entry.content, 'New Test Content')
 
 
+class TestDeleteEntry(FlaskViewTestCase):
+    def setUp(self):
+        self.fixtures = {
+            'alice': User(name='Alice', email='alice@example.com',
+                        password=generate_password_hash('alice')),
+            'bob': User(name='Bob', email='bob@example.com',
+                        password=generate_password_hash('bob'))}
+        self.fixtures.update({
+            'entry': Entry(title='Test Entry', content='Test Content',
+                           author=self.fixtures['alice'])})
+        super(TestDeleteEntry, self).setUp()
+
+    def test_unauthenticated_delete_entry(self):
+        response = self.client.post(
+            '/entry/{}/delete'.format(self.fixtures['entry'].id))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/entry/{}/delete'.format(self.fixtures['entry'].id),
+                      self.next_query_parameter(response.location))
+
+    def test_unauthorized_delete_entry(self):
+        self.simulate_login(self.fixtures['bob'])
+        response = self.client.post(
+            '/entry/{}/delete'.format(self.fixtures['entry'].id))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_delete_entry(self):
+        self.simulate_login(self.fixtures['alice'])
+        response = self.client.post(
+            '/entry/{}/delete'.format(self.fixtures['entry'].id))
+
+        self.assertEqual(response.status_code, 302)
+
+        entries = Entry.query.all()
+        self.assertEqual(len(entries), 0)
+
+
 if __name__ == '__main__':
     unittest.main()
