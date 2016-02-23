@@ -85,6 +85,15 @@ class TestEditEntry(FlaskViewTestCase):
                            author=self.fixtures['alice'])})
         super(TestEditEntry, self).setUp()
 
+    def test_unauthenticated_edit_entry(self):
+        response = self.client.post(
+            '/entry/{}/edit'.format(self.fixtures['entry'].id),
+            data=self.updated_entry_data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/entry/{}/edit'.format(self.fixtures['entry'].id),
+                      self.next_query_parameter(response.location))
+
     def test_unauthorized_edit_entry(self):
         self.simulate_login(self.fixtures['bob'])
         response = self.client.post(
