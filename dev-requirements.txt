@@ -1,1 +1,2 @@
 splinter==0.7.3
+-r requirements.txt

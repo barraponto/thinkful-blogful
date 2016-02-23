@@ -1,0 +1,13 @@
+language: python
+python:
+  - 3.5
+install: python3 -m pip install -r dev-requirements.txt
+env:
+  - CONFIG_PATH=blogful.config.TravisConfig
+before_script:
+  - psql -c 'create database "tf-blogful-tests";' -U postgres
+script:
+  - PYTHONPATH=. python3 tests/test_filter.py
+  - PYTHONPATH=. python3 tests/test_forms.py
+  - PYTHONPATH=. python3 tests/test_views_integration.py
+  - PYTHONPATH=. python3 tests/test_views_acceptance.py
