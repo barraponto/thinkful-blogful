@@ -6,6 +6,7 @@ env:
   - CONFIG_PATH=blogful.config.TravisConfig
 before_script:
   - psql -c 'create database "tf-blogful-tests";' -U postgres
+  - cd blogful && bower install
 script:
   - PYTHONPATH=. python3 tests/test_filter.py
   - PYTHONPATH=. python3 tests/test_forms.py
